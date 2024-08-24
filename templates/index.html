@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestionnaire de scripts</title>
+    <style>
+        /* Header */
+        header {
+            background-color: #e0e0de;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-content .logo {
+            width: 150px;
+            height: 150px;
+            margin-right: 20px;
+            /* Espace entre le logo et le titre */
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        h1,
+        h2 {
+            color: #333;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        input,
+        select {
+            margin-bottom: 10px;
+            display: block;
+            width: 100%;
+            padding: 5px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .cron-examples {
+            background-color: #f8f8f8;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .cron-examples h3 {
+            margin-top: 0;
+        }
+
+        .cron-examples ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .cron-examples li {
+            margin-bottom: 10px;
+        }
+
+        .cron-examples code {
+            background-color: #e0e0e0;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+
+        #logTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        #logTable th,
+        #logTable td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        #logTable th {
+            background-color: #f2f2f2;
+        }
+
+        /* Content area */
+        .content {
+            flex: 1;
+            padding: 20px 0;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        footer p {
+            margin: 5px 0;
+        }
+
+        footer a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo">
+            <h1>Gestionnaire de Scripts Python</h1>
+        </div>
+    </header>
+
+    <h2>Ajouter un script</h2>
+    <form id="addScriptForm">
+        <input type="text" id="scriptName" placeholder="Nom du script" required>
+        <input type="text" id="scriptPath" placeholder="Chemin du script" required>
+        <input type="text" id="scriptSchedule" placeholder="Planification (format cron)" required>
+        <button type="submit">Ajouter</button>
+    </form>
+
+    <div class="cron-examples">
+        <h3>Exemples de planification cron :</h3>
+        <ul>
+            <li><code>* * * * *</code> : Toutes les minutes</li>
+            <li><code>0 * * * *</code> : Toutes les heures</li>
+            <li><code>0 0 * * *</code> : Tous les jours à minuit</li>
+            <li><code>0 0 * * 0</code> : Tous les dimanches à minuit</li>
+            <li><code>0 0 1 * *</code> : Le premier jour de chaque mois</li>
+            <li><code>0 9 * * 1-5</code> : Tous les jours de la semaine à 9h00</li>
+            <li><code>0 0 1,15 * *</code> : Le 1er et le 15 de chaque mois</li>
+            <li><code>0 */2 * * *</code> : Toutes les 2 heures</li>
+            <li><code>0 9-17 * * *</code> : Toutes les heures de 9h à 17h</li>
+            <li><code>0 0 * * 1,3,5</code> : Tous les lundis, mercredis et vendredis à minuit</li>
+        </ul>
+    </div>
+
+    <h2>Liste des scripts</h2>
+    <table id="scriptList">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Chemin</th>
+                <th>Planification</th>
+                <th>Actif</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Les scripts seront ajoutés ici dynamiquement -->
+        </tbody>
+    </table>
+
+    <h2>Logs d'exécution</h2>
+    <table id="logTable">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Script</th>
+                <th>Statut</th>
+                <th>Message</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Les logs seront ajoutés ici dynamiquement -->
+        </tbody>
+    </table>
+    <div id="pagination" style="margin-top: 20px;">
+        <!-- Les boutons de pagination seront ajoutés ici dynamiquement -->
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Florian VARY - For community</p>
+    </footer>
+
+    <script>
+        function loadScripts() {
+            fetch('/list_scripts')
+                .then(response => response.json())
+                .then(scripts => {
+                    const tbody = document.querySelector('#scriptList tbody');
+                    tbody.innerHTML = '';
+                    scripts.forEach(script => {
+                        const row = `
+    <tr>
+        <td>${script.name}</td>
+        <td>${script.path}</td>
+        <td>${script.schedule}</td>
+        <td>
+            <input type="checkbox" ${script.active ? 'checked' : ''}
+                onchange="toggleScript(${script.id}, this.checked)">
+        </td>
+        <td>
+            <button onclick="runScriptNow(${script.id})">Exécuter maintenant</button>
+            <button onclick="deleteScript(${script.id})">Supprimer</button>
+        </td>
+    </tr>
+    `;
+                        tbody.innerHTML += row;
+                    });
+                });
+        }
+
+        function toggleScript(id, active) {
+            fetch(`/toggle_script/${id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ active: active }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    loadScripts(); // Recharger la liste pour refléter les changements
+                });
+        }
+
+        function runScriptNow(scriptId) {
+            fetch(`/run_script_now/${scriptId}`, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    loadLogs(); // Rechargez les logs après l'exécution
+                })
+                .catch(error => {
+                    console.error('Erreur lors de l\'exécution du script:', error);
+                    alert('Une erreur s\'est produite lors de l\'exécution du script.');
+                    loadLogs(); // Rechargez les logs même en cas d'erreur
+                });
+        }
+
+        function deleteScript(id) {
+            if (confirm("Êtes-vous sûr de vouloir supprimer ce script ?")) {
+                fetch(`/remove_script/${id}`, {
+                    method: 'DELETE',
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(data.message);
+                        loadScripts(); // Recharger la liste pour refléter les changements
+                    });
+            }
+        }
+
+        let currentPage = 1;
+        const logsPerPage = 10;
+
+        function loadLogs(page = 1) {
+            currentPage = page;
+            fetch(`/get_logs?page=${page}&per_page=${logsPerPage}`)
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.querySelector('#logTable tbody');
+                    tbody.innerHTML = '';
+                    data.logs.forEach(log => {
+                        const row = `
+                <tr>
+                    <td>${new Date(log.timestamp).toLocaleString()}</td>
+                    <td>${log.script_name}</td>
+                    <td>${log.status}</td>
+                    <td>${log.message}</td>
+                </tr>
+                `;
+                        tbody.innerHTML += row;
+                    });
+                    renderPagination(data.pages, data.current_page);
+                });
+        }
+
+        function renderPagination(totalPages, currentPage) {
+            const paginationContainer = document.querySelector('#pagination');
+            paginationContainer.innerHTML = '';
+
+            // Bouton précédent
+            const prevButton = document.createElement('button');
+            prevButton.innerHTML = '&laquo;'; // Flèche gauche
+            prevButton.disabled = currentPage === 1;
+            prevButton.onclick = () => loadLogs(currentPage - 1);
+            paginationContainer.appendChild(prevButton);
+
+            // Déterminer les pages à afficher
+            let startPage = Math.floor((currentPage - 1) / 10) * 10 + 1;
+            let endPage = Math.min(startPage + 9, totalPages);
+
+            // Affichage des numéros de page
+            for (let page = startPage; page <= endPage; page++) {
+                const pageButton = document.createElement('button');
+                pageButton.textContent = page;
+                if (page === currentPage) {
+                    pageButton.disabled = true;
+                }
+                pageButton.onclick = () => loadLogs(page);
+                paginationContainer.appendChild(pageButton);
+            }
+
+            // Bouton suivant
+            const nextButton = document.createElement('button');
+            nextButton.innerHTML = '&raquo;'; // Flèche droite
+            nextButton.disabled = currentPage === totalPages;
+            nextButton.onclick = () => loadLogs(currentPage + 1);
+            paginationContainer.appendChild(nextButton);
+        }
+
+
+        function startLogRefresh() {
+            setInterval(loadLogs, 30000); // Rafraîchit toutes les 30 secondes
+        }
+
+        // Appelez cette fonction au chargement de la page
+        startLogRefresh();
+
+        // Modifiez également la fonction d'ajout de script pour inclure le statut actif
+        document.getElementById('addScriptForm').onsubmit = function (e) {
+            e.preventDefault();
+            const scriptData = {
+                name: document.getElementById('scriptName').value,
+                path: document.getElementById('scriptPath').value,
+                schedule: document.getElementById('scriptSchedule').value,
+                active: true // Par défaut, les nouveaux scripts sont actifs
+            };
+            fetch('/add_script', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(scriptData),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    loadScripts();
+                    this.reset();
+                });
+        };
+
+        function initializePage() {
+            loadScripts();
+            loadLogs(1);
+        }
+
+        window.onload = initializePage;
+
+    </script>
+</body>
+
+</html>
