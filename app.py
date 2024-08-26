@@ -19,8 +19,8 @@ def add_script():
         name=data["name"],
         path=data["path"],
         schedule=data["schedule"],
-        active=data("active", True),  # Par défaut, le script est actif
-        venv_path=data("venv_path"),
+        active=data.get("active", True),  # Par défaut, le script est actif
+        venv_path=data["venv_path"],
     )
     db_session.add(script)
     db_session.commit()
