@@ -9,19 +9,19 @@ class Script(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True)
     path = Column(String(255))
+    venv_path = Column(String(255))
     schedule = Column(String(100))
     active = Column(Boolean, default=True)
     logs = relationship("Log", back_populates="script")
-    venv_path = Column(String(255))
 
     def to_dict(self):
         return {
             "id": self.id,
             "name": self.name,
             "path": self.path,
+            "venv_path": self.venv_path,
             "schedule": self.schedule,
             "active": self.active,
-            "venv_path": self.venv_path,
         }
 
 

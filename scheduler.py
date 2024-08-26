@@ -60,8 +60,13 @@ class Scheduler:
         try:
             # Déterminer le binaire Python à utiliser
             if script.venv_path:
-                # Utiliser le Python de l'environnement virtuel
-                python_executable = os.path.join(script.venv_path, "bin", "python")
+                # Détecter l'os d'éxecution
+                if sys.platform == "win32":
+                    python_executable = os.path.join(
+                        script.venv_path, "Scripts", "python.exe"
+                    )
+                else:
+                    python_executable = os.path.join(script.venv_path, "bin", "python")
             else:
                 # Utiliser le Python système par défaut
                 python_executable = sys.executable

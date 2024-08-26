@@ -24,17 +24,15 @@ git clone https://github.com/votre-nom/gestionnaire-scripts-python.git
 cd gestionnaire-scripts-python
 Copy
 2. Installez les dépendances :
-pip install flask sqlalchemy apscheduler
+pip install -r requirements.txt
 Copy
-3. Initialisez la base de données :
-python
-
-
-
-from database import init_db
-init_db()
-exit()
-
+3. Activez l'environnement :
+venv/Scripts/Activate
+Copy
+source bin/activate
+Copy
+4. Initialisez la base de données :
+python init_db.py
 
 
 Copy

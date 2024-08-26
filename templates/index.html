@@ -169,7 +169,7 @@
     <header>
         <div class="header-content">
             <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo">
-            <h1>Gestionnaire de Scripts Python</h1>
+            <h1>Python - Script Scheduler</h1>
         </div>
     </header>
 
@@ -183,7 +183,12 @@
     </form>
 
     <div class="cron-examples">
-        <h3>Exemples de planification cron :</h3>
+        <h3>Exemple :</h3>
+        <li>Nom du script : <code>Extraction des statistiques</code></li>
+        <li>Chemin du script : <code>c:/python/extraction_stat.py</code></li>
+        <li>Chemin de l'environnement : <code>c:/python/.venv</code> (si vide utilise l'environnement par défaut)</li>
+
+        <h4>Planification cron :</h4>
         <ul>
             <li><code>* * * * *</code> : Toutes les minutes</li>
             <li><code>0 * * * *</code> : Toutes les heures</li>
