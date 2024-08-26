@@ -58,11 +58,21 @@ class Scheduler:
 
     def execute_script(self, script):
         try:
+            # Déterminer le binaire Python à utiliser
+            if script.venv_path:
+                # Utiliser le Python de l'environnement virtuel
+                python_executable = os.path.join(script.venv_path, "bin", "python")
+            else:
+                # Utiliser le Python système par défaut
+                python_executable = sys.executable
+
+            # Exécuter le script
             result = subprocess.run(
-                [sys.executable, script.path],
+                [python_executable, script.path],
                 capture_output=True,
                 text=True,
                 check=True,
+                env=os.environ.copy(),  # Copie l'environnement actuel
             )
             output = result.stdout
             error = result.stderr

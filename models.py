@@ -12,6 +12,7 @@ class Script(Base):
     schedule = Column(String(100))
     active = Column(Boolean, default=True)
     logs = relationship("Log", back_populates="script")
+    venv_path = Column(String(255))
 
     def to_dict(self):
         return {
@@ -20,6 +21,7 @@ class Script(Base):
             "path": self.path,
             "schedule": self.schedule,
             "active": self.active,
+            "venv_path": self.venv_path,
         }
 
 

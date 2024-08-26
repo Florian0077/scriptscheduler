@@ -177,6 +177,7 @@
     <form id="addScriptForm">
         <input type="text" id="scriptName" placeholder="Nom du script" required>
         <input type="text" id="scriptPath" placeholder="Chemin du script" required>
+        <input type="text" id="scriptVenvPath" placeholder="Chemin de l'environnement" required>
         <input type="text" id="scriptSchedule" placeholder="Planification (format cron)" required>
         <button type="submit">Ajouter</button>
     </form>
@@ -248,6 +249,7 @@
     <tr>
         <td>${script.name}</td>
         <td>${script.path}</td>
+        <td>${script.venv_path}</td>
         <td>${script.schedule}</td>
         <td>
             <input type="checkbox" ${script.active ? 'checked' : ''}
@@ -379,6 +381,7 @@
             const scriptData = {
                 name: document.getElementById('scriptName').value,
                 path: document.getElementById('scriptPath').value,
+                venv_path: document.getElementById('scriptVenvPath').value,
                 schedule: document.getElementById('scriptSchedule').value,
                 active: true // Par défaut, les nouveaux scripts sont actifs
             };
