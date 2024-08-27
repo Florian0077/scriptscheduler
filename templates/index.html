@@ -160,6 +160,24 @@
         footer a:hover {
             text-decoration: underline;
         }
+
+        .spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    border-top-color: #000;
+    animation: spin 1s ease-in-out infinite;
+    -webkit-animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { -webkit-transform: rotate(360deg); }
+}
+@-webkit-keyframes spin {
+    to { -webkit-transform: rotate(360deg); }
+}
     </style>
 </head>
 
@@ -252,21 +270,21 @@
                     tbody.innerHTML = '';
                     scripts.forEach(script => {
                         const row = `
-    <tr>
-        <td>${script.name}</td>
-        <td>${script.path}</td>
-        <td>${script.venv_path}</td>
-        <td>${script.schedule}</td>
-        <td>
-            <input type="checkbox" ${script.active ? 'checked' : ''}
-                onchange="toggleScript(${script.id}, this.checked)">
-        </td>
-        <td>
-            <button onclick="runScriptNow(${script.id})">Exécuter maintenant</button>
-            <button onclick="deleteScript(${script.id})">Supprimer</button>
-        </td>
-    </tr>
-    `;
+                        <tr>
+                            <td>${script.name}</td>
+                            <td>${script.path}</td>
+                            <td>${script.venv_path}</td>
+                            <td>${script.schedule}</td>
+                            <td>
+                                <input type="checkbox" ${script.active ? 'checked' : ''}
+                                    onchange="toggleScript(${script.id}, this.checked)">
+                            </td>
+                            <td>
+                                <button onclick="runScriptNow(${script.id})">Exécuter maintenant</button>
+                                <button onclick="deleteScript(${script.id})">Supprimer</button>
+                            </td>
+                        </tr>
+                        `;
                         tbody.innerHTML += row;
                     });
                 });
@@ -288,18 +306,27 @@
         }
 
         function runScriptNow(scriptId) {
-            fetch(`/run_script_now/${scriptId}`, { method: 'POST' })
-                .then(response => response.json())
-                .then(data => {
-                    alert(data.message);
-                    loadLogs(); // Rechargez les logs après l'exécution
-                })
-                .catch(error => {
-                    console.error('Erreur lors de l\'exécution du script:', error);
-                    alert('Une erreur s\'est produite lors de l\'exécution du script.');
-                    loadLogs(); // Rechargez les logs même en cas d'erreur
-                });
-        }
+    const button = event.target;
+    const originalText = button.textContent;
+    button.disabled = true;
+    button.innerHTML = '<div class="spinner"></div> Exécution...';
+
+    fetch(`/run_script_now/${scriptId}`, { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            loadLogs();
+        })
+        .catch(error => {
+            console.error('Erreur lors de l\'exécution du script:', error);
+            alert('Une erreur s\'est produite lors de l\'exécution du script.');
+            loadLogs();
+        })
+        .finally(() => {
+            button.disabled = false;
+            button.textContent = originalText;
+        });
+}
 
         function deleteScript(id) {
             if (confirm("Êtes-vous sûr de vouloir supprimer ce script ?")) {
